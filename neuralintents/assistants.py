@@ -15,6 +15,7 @@ from tensorflow.keras.layers import Dense, Dropout, InputLayer
 from tensorflow.keras.optimizers import Adam, Optimizer
 
 
+
 class BasicAssistant:
 
     def __init__(self, intents_data: Union[str, os.PathLike, dict], method_mappings: dict = {}, hidden_layers: list = None, model_name: str = "basic_model") -> None:
@@ -80,12 +81,12 @@ class BasicAssistant:
 
         return X, y
 
-    def fit_model(self, optimizer: Optimizer = None, epochs: int = 200):
+    def fit_model(self, optimizer: Optimizer = None, epochs: int = 200, batch_size: int = 5):
         X, y = self._prepare_intents_data()
 
         if self.hidden_layers is None:
             self.model = Sequential()
-            self.model.add(InputLayer(input_shape=(None, X.shape[1])))
+            self.model.add(InputLayer(input_shape=(X.shape[1],)))
             self.model.add(Dense(128, activation='relu'))
             self.model.add(Dropout(0.5))
             self.model.add(Dense(64, activation='relu'))
@@ -104,7 +105,7 @@ class BasicAssistant:
 
         self.model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=["accuracy"])
 
-        self.history = self.model.fit(X, y, epochs=epochs, batch_size=5, verbose=1)
+        self.history = self.model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=1)
 
     def save_model(self):
         self.model.save(f"{self.model_name}.keras", self.history)
